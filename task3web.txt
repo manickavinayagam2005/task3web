@@ -1,0 +1,55 @@
+const express = require("express");
+const app = express();
+const PORT = 3000;
+
+// Middleware to parse JSON body
+app.use(express.json());
+
+// In-memory books storage
+let books = [
+  { id: 1, title: "Java Basics", author: "James Gosling" },
+  { id: 2, title: "Python Crash Course", author: "Eric Matthes" }
+];
+
+// GET all books
+app.get("/books", (req, res) => {
+  res.json(books);
+});
+
+// POST add new book
+app.post("/books", (req, res) => {
+  const newBook = {
+    id: books.length + 1,
+    title: req.body.title,
+    author: req.body.author
+  };
+  books.push(newBook);
+  res.status(201).json(newBook);
+});
+
+// PUT update book by id
+app.put("/books/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const book = books.find(b => b.id === id);
+
+  if (!book) {
+    return res.status(404).json({ message: "Book not found" });
+  }
+
+  book.title = req.body.title || book.title;
+  book.author = req.body.author || book.author;
+
+  res.json(book);
+});
+
+// DELETE book by id
+app.delete("/books/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  books = books.filter(b => b.id !== id);
+  res.json({ message: "Book deleted successfully" });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(✅ Server running at http://localhost:${PORT});
+});
